@@ -1,0 +1,34 @@
+<% include ./partials/header.ejs %>
+<form action="/items" method="post">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input type="text" class="form-control" name="title">
+  </div>
+  <div class="form-group">
+    <label for="publication">Publication</label>
+    <input type="text" class="form-control" name="publication">
+  </div>
+  <div class="form-group">
+    <label for="authors">Authors</label>
+    <input type="text" class="form-control" name="authors">
+  </div>
+  <div class="form-group">
+    <label for="edition">Edition</label>
+    <input type="text" class="form-control" name="edition">
+  </div>
+  <div class="form-group">
+    <label for="rent">Rent</label>
+    <input type="number" class="form-control" name="rent">
+  </div>
+  <div class="form-group">
+    <label for="deposit">Deposit</label>
+    <input type="number" class="form-control" name="deposit">
+  </div>
+  <div class="form-group">
+    <label for="penalty">Penalty</label>
+    <input type="Number" class="form-control" name="penalty">
+  </div>
+  <button type="submit" class="btn btn-primary btn-block">Submit</button>
+</form>
+
+<% include ./partials/footer.ejs %>

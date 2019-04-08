@@ -1,0 +1,36 @@
+<% include ./partials/header.ejs %>
+
+<form action="/items/<%=item._id%>?_method=PUT" method="post">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input type="text" class="form-control" name="title" value="<%=item.title%>">
+  </div>
+  <div class="form-group">
+    <label for="publication">Publication</label>
+    <input type="text" class="form-control" name="publication" value="<%=item.publication%>">
+  </div>
+  <div class="form-group">
+    <label for="authors">Authors</label>
+    <input type="text" class="form-control" name="authors" value="<%=item.authors%>">
+  </div>
+  <div class="form-group">
+    <label for="edition">Edition</label>
+    <input type="text" class="form-control" name="edition" value="<%=item.edition%>">
+  </div>
+  <div class="form-group">
+    <label for="rent">Rent</label>
+    <input type="number" class="form-control" name="rent" value="<%=item.rent%>">
+  </div>
+  <div class="form-group">
+    <label for="deposit">Deposit</label>
+    <input type="number" class="form-control" name="deposit" value="<%=item.deposit%>">
+  </div>
+  <div class="form-group">
+    <label for="penalty">Penalty</label>
+    <input type="Number" class="form-control" name="penalty" value="<%=item.penalty%>">
+  </div>
+  <button type="submit" class="btn btn-primary btn-block">Submit</button>
+
+</form>
+
+<% include ./partials/footer.ejs %>

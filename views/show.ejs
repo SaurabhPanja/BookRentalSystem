@@ -1,0 +1,16 @@
+<% include ./partials/header.ejs %>
+
+  <p><%=item.title%></p>
+  <p><%=item.publication%></p>
+  <p><%=item.authors%></p>
+  <p><%=item.edition%></p>
+  <p><%=item.rent%></p>
+  <p><%=item.deposit%></p>
+  <p><%=item.penalty%></p>
+
+  <a class="btn btn-warning btn-lg" href="/items/<%=item._id%>/edit">Edit</a>
+  <form action="/items/<%=item._id%>?_method=DELETE" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+  </form>
+  <a href="/rentBook/<%=item._id%>" class="btn btn-success">Rent it</a>
+  <% include ./partials/footer.ejs %>

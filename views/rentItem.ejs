@@ -1,0 +1,21 @@
+//book details
+//make payments deposit + monthly rent
+//shipping address
+//approved if yes green
+
+<% include ./partials/header.ejs %>
+
+  <p>Title <%=item.title%></p>
+  <p>Publication <%=item.publication%></p>
+  <p>Author <%=item.authors%></p>
+  <p>Edition <%=item.edition%></p>
+  <p>Rent per month <%=item.rent%></p>
+  <p>Deposit <%=item.deposit%></p>
+  <p>Penalty <%=item.penalty%></p>
+  <p><b>Amount to be paid : </b> <%=item.deposit + item.rent%> </p>
+
+<form action="/rentBook/<%=item._id%>" method="post">
+  <textarea name="address" rows="8" cols="80"></textarea>
+  <button type="submit" name="button">Rent It</button>
+</form>
+  <% include ./partials/footer.ejs %>
