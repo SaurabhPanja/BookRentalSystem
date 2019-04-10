@@ -42,6 +42,10 @@ app.use(function (req, res, next) {
     next();
 });
 
+//check and send mail every 24 hours
+//setInterval(sendMailRemainingDays,10000);
+//sendMailRemainingDays();
+
 //index route
 app.get('/',isLoggedIn,function (req,res) {
   res.redirect('/items');
@@ -89,7 +93,7 @@ app.post("/login", passport.authenticate("local",
 app.get("/logout", function(req, res) {
    req.logout();
    req.flash("success", "Logged you out!"); // handle logout flash msg
-   res.redirect("/");
+   res.redirect("/login");
 });
 
 //items
@@ -134,6 +138,7 @@ app.post("/items",isLoggedIn,function (req,res) {
     rent : req.body.rent,
     deposit : req.body.deposit,
     penalty : req.body.penalty,
+    sold : false,
     ownedBy : ownedBy
 
   },function (err,data) {
@@ -146,7 +151,7 @@ app.post("/items",isLoggedIn,function (req,res) {
   });
 });
 //update route
-app.put("/items/:id",isLoggedIn,function (req,res) {
+app.put("/items/:id",checkOwnership,function (req,res) {
   //req.body.description = req.sanitize(req.body.description);
   Item.findByIdAndUpdate(req.params.id,req.body,function (err,data) {
     if (err) {
@@ -158,7 +163,7 @@ app.put("/items/:id",isLoggedIn,function (req,res) {
   });
 });
 //delete route
-app.delete("/items/:id",isLoggedIn,function (req,res) {
+app.delete("/items/:id",checkOwnership,function (req,res) {
   Item.findByIdAndRemove(req.params.id,function (err) {
       if (err) {
         console.log(err);
@@ -168,7 +173,7 @@ app.delete("/items/:id",isLoggedIn,function (req,res) {
   });
 });
 //edit route
-app.get("/items/:id/edit",isLoggedIn,function (req,res) {
+app.get("/items/:id/edit",checkOwnership,function (req,res) {
   Item.findById(req.params.id,function (err,data) {
     if (err) {
       console.log(err);
@@ -179,7 +184,7 @@ app.get("/items/:id/edit",isLoggedIn,function (req,res) {
 });
 
 //rent Book
-app.get('/rentBook/:id',function(req,res){
+app.get('/rentBook/:id',canRent,function(req,res){
   Item.findById(req.params.id,function (err,data) {
     if (err) {
       console.log(err);
@@ -189,10 +194,19 @@ app.get('/rentBook/:id',function(req,res){
   });
 });
 //ship address
-app.post('/rentBook/:id',function(req,res){
+app.post('/rentBook/:id',canRent,function(req,res){
+  Item.findByIdAndUpdate(req.params.id,{$set : {sold : true}},function(err,data){
+    if(err){
+      console.log(err);
+    }else {
+      console.log(data);
+    }
+  });
   Transaction.create({
     item : req.params.id,
     shippingAddress : req.body.address,
+    orderedBy : req.user.username,
+    dueDate : Date.now() + 30*24*60*60*1000,
     approved : false
   },function(err,transaction){
     if(err){
@@ -230,17 +244,44 @@ app.post('/rentBook/:id',function(req,res){
 });
 
 //dashboard
-app.get('/dashboard',function(req,res){
-  User.findOne({username : req.user.username}).populate("rented").populate("onRent").exec(
+app.get('/dashboard',isLoggedIn,function(req,res){
+//how to nested populate https://stackoverflow.com/questions/19222520/populate-nested-array-in-mongoose
+  User.findOne({username : req.user.username}).populate("rented").populate("onRent").populate({
+    path : 'rented',
+    populate : {
+      path : 'item',
+      model : 'Item'
+    }
+  }).populate({
+    path : 'onRent',
+    populate : {
+      path : 'item',
+      model : 'Item'
+    }
+  }).exec(
     function(err,user){
       if (err) {
         console.log(err);
       }else {
         //console.log(user);
-        res.render('dashboard',{user:user});
+        res.render('dashboard',{rented:user.rented,onRent:user.onRent});
+        //res.send(user);
       }
     }
   );
+});
+
+app.post('/approveTransaction/:id',function(req,res){
+  Transaction.findByIdAndUpdate(req.params.id,{ $set : { approved : true }},
+    function(err,data){
+    if(err){
+      console.log(err);
+    }else {
+      //console.log(data);
+      //res.send(data);
+      res.redirect('/dashboard');
+    }
+  });
 });
 
 //middleware login
@@ -249,6 +290,67 @@ function isLoggedIn(req,res,next){
     return next();
   }
   res.redirect('/login');
+}
+//middleware checkOwnership
+function checkOwnership(req,res,next){
+  if (req.isAuthenticated()) {
+        // find the campground with the requested id
+        Item.findById(req.params.id, function (err, foundItem) {
+            if (err) {
+                req.flash("error", "Item not found!");
+                res.redriect("back");
+            } else {
+                // does the user own the campground?
+                if (foundItem.ownedBy.id.equals(req.user._id)) {
+                    next();
+                } else {
+                    req.flash("error", "You don't have permission to do that!");
+                    res.redirect("back");
+                }
+            }
+        });
+    } else {
+        // send flash notification to user to log in first
+        req.flash("error", "You need to be logged in to do that!");
+        res.redirect("back");
+    }
+}
+//middleware cannot rent if owns it
+function canRent(req,res,next){
+  if (req.isAuthenticated()) {
+        // find the campground with the requested id
+        Item.findById(req.params.id, function (err, foundItem) {
+            if (err) {
+                req.flash("error", "Item not found!");
+                res.redriect("back");
+            } else {
+                // does the user own the campground?
+                if (foundItem.ownedBy.id.equals(req.user._id)) {
+                  req.flash("error", "You don't have permission to do that!");
+                  res.redirect("back");
+                } else {
+                  next();
+                }
+            }
+        });
+    } else {
+        // send flash notification to user to log in first
+        req.flash("error", "You need to be logged in to do that!");
+        res.redirect("back");
+    }
+}
+//should run everytime
+function sendMailRemainingDays(){
+  Transaction.find({},function(err,transactionData){
+    if (err) {
+      console.log(err);
+    }else{
+      transactionData.forEach((transactionData)=>{
+        let timeDiff = Math.round((Date.parse(transactionData.dueDate) - Date.now())/(24*60*60*1000));
+        console.log(timeDiff);
+      });
+    }
+  });
 }
 
 //error 404

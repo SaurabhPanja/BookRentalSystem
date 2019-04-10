@@ -1,16 +1,40 @@
 <% include ./partials/header.ejs %>
 
-  <p><%=item.title%></p>
-  <p><%=item.publication%></p>
-  <p><%=item.authors%></p>
-  <p><%=item.edition%></p>
-  <p><%=item.rent%></p>
-  <p><%=item.deposit%></p>
-  <p><%=item.penalty%></p>
+<div class="row">
+  <div class="col-lg-12 mb-3">
+    <div class="card">
+      <div class="card-header">
+        <h1>Title : <%=item.title%></h1>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Publication : <%=item.publication%></li>
+        <li class="list-group-item">Authors : <%=item.authors%></li>
+        <li class="list-group-item">Edition : <%=item.edition%></li>
+        <li class="list-group-item">Rent : <%=item.rent%></li>
+        <li class="list-group-item">Deposit : <%=item.deposit%></li>
+        <li class="list-group-item">Penalty : <%=item.penalty%></li>
+      </ul>
+    </div>
+  </div>
+    <%if(currentUser && item.ownedBy.id.equals(currentUser._id)){%>
+      <div class="col-lg-4">
+        <a class="btn btn-warning btn-lg" href="/items/<%=item._id%>/edit">Edit</a>
+      </div>
+      <div class="col-lg-4">
+        <form action="/items/<%=item._id%>?_method=DELETE" method="post">
+          <button type="submit" class="btn btn-danger btn-lg">Delete</button>
+        </form>
+      </div>
+    <%}else{%>
+      <div class="col-lg-4">
+        <a href="/rentBook/<%=item._id%>" class="btn btn-success btn-lg">Rent it</a>
+      </div>
+    <%}%>
 
-  <a class="btn btn-warning btn-lg" href="/items/<%=item._id%>/edit">Edit</a>
-  <form action="/items/<%=item._id%>?_method=DELETE" method="post">
-    <button type="submit" class="btn btn-danger">Delete</button>
-  </form>
-  <a href="/rentBook/<%=item._id%>" class="btn btn-success">Rent it</a>
+
+
+</div>
+
+
+
   <% include ./partials/footer.ejs %>

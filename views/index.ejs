@@ -1,15 +1,24 @@
 <% include ./partials/header.ejs %>
 <div class="row">
 
-
   <%for(var i = 0; i < items.length; i++){%>
     <div class="col-sm-12 col-md-4 mb-5">
-      <p>Title : <%=items[i].title%></p>
-      <p>Publication : <%=items[i].publication%></p>
-      <p>Authors :<%=items[i].authors%></p>
-
-      <a href="/items/show/<%=items[i]._id%>">Request to Rent</a>
-
+      <div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title"><%=items[i].title%></h5>
+    <h6 class="card-subtitle mb-2 text-muted">Authors :<%=items[i].authors%></h6>
+    <p class="card-text">Publication : <%=items[i].publication%></p>
+    <%if (items[i].sold) {%>
+      <button class="btn btn-secondary" disabled>Sold</button>
+    <%}else {%>
+      <%if(currentUser.username===items[i].ownedBy.username){%>
+        <a href="/items/show/<%=items[i]._id%>" class="btn btn-warning">Update</a>
+        <%}else{%>
+      <a href="/items/show/<%=items[i]._id%>" class="btn btn-info">Request to Rent</a>
+      <%}%>
+    <%}%>
+  </div>
+</div>
     </div>
   <%}%>
   </div>

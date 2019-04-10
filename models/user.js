@@ -6,6 +6,10 @@ var passportLocalMongoose = require("passport-local-mongoose");
 var UserSchema = new mongoose.Schema({
   username: String,
   password: String,
+  money : {
+    type : Number,
+    default : 1000
+  },
   rented : [
         { //item user has taken on rent from other
             type: mongoose.Schema.Types.ObjectId,

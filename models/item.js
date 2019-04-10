@@ -10,6 +10,7 @@ var itemSchema = new mongoose.Schema({
   rent        : Number,
   deposit     : Number,
   penalty     : Number,
+  sold        : Boolean,
   ownedBy: {
       id: {
           type: mongoose.Schema.Types.ObjectId,

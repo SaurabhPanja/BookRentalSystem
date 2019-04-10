@@ -1,21 +1,30 @@
-//book details
-//make payments deposit + monthly rent
-//shipping address
-//approved if yes green
+
 
 <% include ./partials/header.ejs %>
 
-  <p>Title <%=item.title%></p>
-  <p>Publication <%=item.publication%></p>
-  <p>Author <%=item.authors%></p>
-  <p>Edition <%=item.edition%></p>
-  <p>Rent per month <%=item.rent%></p>
-  <p>Deposit <%=item.deposit%></p>
-  <p>Penalty <%=item.penalty%></p>
-  <p><b>Amount to be paid : </b> <%=item.deposit + item.rent%> </p>
+<div class="row">
+  <div class="col-lg-12 mb-3">
+    <div class="card">
+      <div class="card-header">
+        <h1>Title : <%=item.title%></h1>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Publication : <%=item.publication%></li>
+        <li class="list-group-item">Authors : <%=item.authors%></li>
+        <li class="list-group-item">Edition : <%=item.edition%></li>
+        <li class="list-group-item">Rent : <%=item.rent%></li>
+        <li class="list-group-item">Deposit : <%=item.deposit%></li>
+        <li class="list-group-item">Penalty : <%=item.penalty%></li>
+        <li class="list-group-item border border-info"><b>Amount to be paid : </b> <%=item.deposit + item.rent%> </li>
+      </ul>
+    </div>
+  </div>
+  </div>
 
-<form action="/rentBook/<%=item._id%>" method="post">
-  <textarea name="address" rows="8" cols="80"></textarea>
-  <button type="submit" name="button">Rent It</button>
+<p class="display-5">Enter Shipping Address</p>
+<form class="mb-5" action="/rentBook/<%=item._id%>" method="post">
+  <textarea name="address" rows="4" cols="80"></textarea>
+  <br>
+  <button class="btn btn-success" type="submit" name="button">Confirm And Pay</button>
 </form>
   <% include ./partials/footer.ejs %>

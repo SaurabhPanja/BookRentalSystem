@@ -1,6 +1,52 @@
 <% include ./partials/header.ejs%>
-<p><%=user%></p>
-//show listed Books
-//show books on rent
-//accept rent request
+<h4>Your book(s) rented by others</h4>
+<div class="row">
+
+  <%for(var i = 0; i < onRent.length; i++){%>
+    <div class="col-sm-12 col-md-4 mb-5">
+      <div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Title : <%=onRent[i].item.title%></h5>
+    <p class="card-text">Shipping Address : <%=onRent[i].shippingAddress%></p>
+    <h6 class="card-subtitle mb-2 text-muted">Authors :<%=onRent[i].item.authors%></h6>
+    <p class="card-text">Amount Paid : <%=onRent[i].item.deposit + onRent[i].item.rent%></p>
+    <h6 class="card-subtitle mb-2 text-muted">Ordered By <%=onRent[i].orderedBy%></h6>
+    <p class="card-text">Rented On : <%=onRent[i].date.toDateString()%></p>
+    <p class="card-text">Due Date : <%=onRent[i].dueDate.toDateString()%></p>
+    <p class="card-text">Remaining Days : <%=Math.round((onRent[i].dueDate - Date.now())/(24*60*60*1000))%></p>
+    <%if(!onRent[i].approved){%>
+      <form action="/approveTransaction/<%=onRent[i]._id%>" method="post">
+        <button class="btn btn-outline-danger" type="submit" name="button">Approve</button>
+      </form>
+      <%}%>
+  </div>
+</div>
+    </div>
+  <%}%>
+  </div>
+  <h4>You have rented book(s) from other</h4>
+<div class="row">
+
+  <%for(var i = 0; i < rented.length; i++){%>
+    <div class="col-sm-12 col-md-4 mb-5">
+      <div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title"><%=rented[i].item.title%></h5>
+    <h6 class="card-subtitle mb-2 text-muted">Authors :<%=rented[i].item.authors%></h6>
+    <p class="card-text">Publication : <%=rented[i].item.publication%></p>
+    <h6 class="card-subtitle mb-2 text-muted">Rented From <%=rented[i].item.ownedBy.username%></h6>
+    <p class="card-text">Rented On : <%=rented[i].date.toDateString()%></p>
+    <p class="card-text">Due Date : <%=rented[i].dueDate.toDateString()%></p>
+    <p class="card-text">Remaining Days : <%=Math.round((rented[i].dueDate - Date.now())/(24*60*60*1000))%></p>
+    <%if(rented[i].approved){%>
+      <button class="btn btn-outline-success btn-block" disabled>Your book will reach to you soon</button>
+    <%}else{%>
+      <button class="btn btn-outline-danger btn-block" disabled>The seller is yet to approve your book</button>
+    <%}%>
+  </div>
+</div>
+    </div>
+  <%}%>
+  </div>
+
 <% include ./partials/footer.ejs%>
